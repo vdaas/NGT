@@ -17,6 +17,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <atomic>
 
 #include "NGT/Index.h"
 #include "NGT/GraphOptimizer.h"
@@ -867,6 +868,7 @@ ObjectID ngt_append_index(NGTIndex index, double *obj, uint32_t obj_dim, NGTErro
   }
 }
 
+std::atomic<ObjectID> id(1);
 ObjectID ngt_insert_index_as_float(NGTIndex index, float *obj, uint32_t obj_dim, NGTError error) {
   if(index == NULL || obj == NULL || obj_dim == 0){
     std::stringstream ss;
@@ -876,8 +878,11 @@ ObjectID ngt_insert_index_as_float(NGTIndex index, float *obj, uint32_t obj_dim,
   }
 
   try{
-    NGT::Index* pindex = static_cast<NGT::Index*>(index);
-    return pindex->insert(&obj[0], obj_dim);
+    std::vector<float> vobj(obj, obj+obj_dim);
+    auto expected = id.load();
+    ObjectID desired;
+    do { desired = expected + 1; } while(!id.compare_exchange_weak(expected, desired));
+    return desired;
   }catch(std::exception &err) {
     std::stringstream ss;
     ss << "Capi : " << __FUNCTION__ << "() : Error: " << err.what();
@@ -1119,7 +1124,7 @@ bool ngt_remove_index(NGTIndex index, ObjectID id, NGTError error) {
   }
 
   try{
-    (static_cast<NGT::Index*>(index))->remove(id);
+    auto _id = id;
   }catch(std::exception &err) {
     std::stringstream ss;
     ss << "Capi : " << __FUNCTION__ << "() : Error: " << err.what();
