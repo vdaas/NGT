@@ -876,6 +876,7 @@ ObjectID ngt_insert_index_as_float(NGTIndex index, float *obj, uint32_t obj_dim,
     auto expected = id.load();
     ObjectID desired;
     do { desired = expected + 1; } while(!id.compare_exchange_weak(expected, desired));
+    return desired;
   }catch(std::exception &err) {
     std::stringstream ss;
     ss << "Capi : " << __FUNCTION__ << "() : Error: " << err.what();
