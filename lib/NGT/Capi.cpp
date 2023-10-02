@@ -17,6 +17,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 
 #include "NGT/Index.h"
 #include "NGT/GraphOptimizer.h"
@@ -1091,22 +1092,10 @@ bool ngt_batch_insert_index_as_float16(NGTIndex index, NGTFloat16 *obj, uint32_t
   return status;
 }
 
+uint32_t _pool_size;
 bool ngt_create_index(NGTIndex index, uint32_t pool_size, NGTError error) {
-  if(index == NULL){
-    std::stringstream ss;
-    ss << "Capi : " << __FUNCTION__ << "() : parametor error: idnex = " << index;
-    operate_error_string_(ss, error);
-    return false;
-  }
-
-  try{
-    (static_cast<NGT::Index*>(index))->createIndex(pool_size);
-  }catch(std::exception &err) {
-    std::stringstream ss;
-    ss << "Capi : " << __FUNCTION__ << "() : Error: " << err.what();
-    operate_error_string_(ss, error);
-    return false;
-  }
+  sleep(2);
+  _pool_size = pool_size;
   return true;
 }
 
