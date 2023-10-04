@@ -1825,7 +1825,9 @@ size_t NGT::Index::insert(const T* object, size_t size)
     getObjectSpace().getRepository().initialize();
   }
 
-  auto *o = getObjectSpace().getRepository().allocateNormalizedPersistentObject(object, size);
-  size_t oid = getObjectSpace().getRepository().insert(dynamic_cast<PersistentObject*>(o));
-  return oid;
+  // auto *o = getObjectSpace().getRepository().allocateNormalizedPersistentObject(object, size);
+  // size_t oid = getObjectSpace().getRepository().insert(dynamic_cast<PersistentObject*>(o));
+  // return oid;
+  getObjectSpace().getRepository().allocateNormalizedPersistentObject(object, size);
+  return 0;
 }
