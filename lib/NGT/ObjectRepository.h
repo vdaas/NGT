@@ -228,43 +228,44 @@ namespace NGT {
     }
 
     template <typename T>
-      Object *allocateObject(T *o, size_t size) {
+    Object *allocateObject(T *o, size_t size) {
       size_t osize = paddedByteSize;
       if (sparse) {
-	size_t vsize = size * (type == typeid(float) ? 4 : 1);
-	osize = osize < vsize ? vsize : osize;
+        size_t vsize = size * (type == typeid(float) ? 4 : 1);
+        osize = osize < vsize ? vsize : osize;
       } else {
-	if (dimension != size) {
-	  std::stringstream msg;
-	  msg << "ObjectSpace::allocateObject: Fatal error! The specified dimension is invalid. The indexed objects="
-	      << dimension << " The specified object=" << size;
-	  NGTThrowException(msg);
-	}
+        if (dimension != size) {
+          std::stringstream msg;
+          msg << "ObjectSpace::allocateObject: Fatal error! The specified dimension is invalid. The indexed objects="
+              << dimension << " The specified object=" << size;
+          NGTThrowException(msg);
+        }
       }
-//       Object *po = new Object(osize);
+      Object *po = new Object(osize);
 //       void *object = static_cast<void*>(&(*po)[0]);
 //       if (type == typeid(uint8_t)) {
-// 	uint8_t *obj = static_cast<uint8_t*>(object);
-// 	for (size_t i = 0; i < size; i++) {
-// 	  obj[i] = static_cast<uint8_t>(o[i]);
-// 	}
+//         uint8_t *obj = static_cast<uint8_t*>(object);
+//         for (size_t i = 0; i < size; i++) {
+//           obj[i] = static_cast<uint8_t>(o[i]);
+//         }
 //       } else if (type == typeid(float)) {
-// 	float *obj = static_cast<float*>(object);
-// 	for (size_t i = 0; i < size; i++) {
-// 	  obj[i] = static_cast<float>(o[i]);
-// 	}
+//         float *obj = static_cast<float*>(object);
+//         for (size_t i = 0; i < size; i++) {
+//           obj[i] = static_cast<float>(o[i]);
+//         }
 // #ifdef NGT_HALF_FLOAT
 //       } else if (type == typeid(float16)) {
-// 	float16 *obj = static_cast<float16*>(object);
-// 	for (size_t i = 0; i < size; i++) {
-// 	  obj[i] = static_cast<float16>(o[i]);
-// 	}
+//         float16 *obj = static_cast<float16*>(object);
+//         for (size_t i = 0; i < size; i++) {
+//           obj[i] = static_cast<float16>(o[i]);
+//         }
 // #endif
 //       } else {
-// 	std::cerr << "ObjectSpace::allocateObject: Fatal error: unsupported type!" << std::endl;
-// 	abort();
+//         std::cerr << "ObjectSpace::allocateObject: Fatal error: unsupported type!" << std::endl;
+//         abort();
 //       }
 //       return po;
+      delete po;
       return nullptr;
     }
 
