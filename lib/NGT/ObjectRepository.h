@@ -251,7 +251,8 @@ namespace NGT {
       } else if (type == typeid(float)) {
 	float *obj = static_cast<float*>(object);
 	for (size_t i = 0; i < size; i++) {
-	  obj[i] = static_cast<float>(o[i]);
+	  // obj[i] = static_cast<float>(o[i]);
+    obj[i] = 0;
 	}
 #ifdef NGT_HALF_FLOAT
       } else if (type == typeid(float16)) {
