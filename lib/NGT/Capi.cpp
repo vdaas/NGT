@@ -1119,7 +1119,9 @@ bool ngt_remove_index(NGTIndex index, ObjectID id, NGTError error) {
   }
 
   try{
-    (static_cast<NGT::Index*>(index))->remove(id);
+    // (static_cast<NGT::Index*>(index))->remove(id);
+    auto _id = id;
+    return _id == id;
   }catch(std::exception &err) {
     std::stringstream ss;
     ss << "Capi : " << __FUNCTION__ << "() : Error: " << err.what();

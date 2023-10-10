@@ -655,6 +655,14 @@ namespace NGT {
       return allocatedObject;
     }
 
+    PersistentObject allocateNormalizedPersistentObjectByValue(const float* obj, size_t size) {
+      PersistentObject allocatedObject = ObjectRepository::allocatePersistentObjectByValue(obj, size);
+      if (normalization) {
+        normalize(allocatedObject);
+      }
+      return allocatedObject;
+    }
+
     size_t getSize() { return ObjectRepository::size(); }
     size_t getSizeOfElement() { return sizeof(OBJECT_TYPE); }
     const std::type_info &getObjectType() { return typeid(OBJECT_TYPE); };
