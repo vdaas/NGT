@@ -112,6 +112,11 @@ namespace NGT {
       abort();
     }
 
+    virtual PersistentObject allocateNormalizedPersistentObjectByValue(const float *obj, size_t size) {
+      std::cerr << "ObjectRepository::allocateNormalizedPersistentObjectByValue: Fatal error! Something wrong!" << std::endl;
+      abort();
+    }
+
     void appendText(std::istream &is, size_t dataSize = 0) {
       if (dimension == 0) {
 	NGTThrowException("ObjectSpace::readText: Dimension is not specified.");
@@ -268,6 +273,46 @@ namespace NGT {
     }
 
     template <typename T>
+    Object allocateObjectByValue(T *o, size_t size) {
+      size_t osize = paddedByteSize;
+      if (sparse) {
+	size_t vsize = size * (type == typeid(float) ? 4 : 1);
+	osize = osize < vsize ? vsize : osize;
+      } else {
+	if (dimension != size) {
+	  std::stringstream msg;
+	  msg << "ObjectSpace::allocateObject: Fatal error! The specified dimension is invalid. The indexed objects="
+	      << dimension << " The specified object=" << size;
+	  NGTThrowException(msg);
+	}
+      }
+      Object po(osize);
+      void *object = static_cast<void*>(&po[0]);
+      if (type == typeid(uint8_t)) {
+	uint8_t *obj = static_cast<uint8_t*>(object);
+	for (size_t i = 0; i < size; i++) {
+	  obj[i] = static_cast<uint8_t>(o[i]);
+	}
+      } else if (type == typeid(float)) {
+	float *obj = static_cast<float*>(object);
+	for (size_t i = 0; i < size; i++) {
+	  obj[i] = static_cast<float>(o[i]);
+	}
+#ifdef NGT_HALF_FLOAT
+      } else if (type == typeid(float16)) {
+	float16 *obj = static_cast<float16*>(object);
+	for (size_t i = 0; i < size; i++) {
+	  obj[i] = static_cast<float16>(o[i]);
+	}
+#endif
+      } else {
+	std::cerr << "ObjectSpace::allocateObject: Fatal error: unsupported type!" << std::endl;
+	abort();
+      }
+      return po;
+    }
+
+    template <typename T>
       Object *allocateObject(const std::vector<T> &o) {
       return allocateObject(o.data(), o.size());
     }
@@ -345,6 +390,17 @@ namespace NGT {
 	NGTThrowException(msg);
       }
       return allocateObject(o, size);
+    }
+
+    template <typename T>
+    PersistentObject allocatePersistentObjectByValue(T *o, size_t size) {
+      if (size != 0 && dimension != size) {
+	std::stringstream msg;
+	msg << "ObjectSpace::allocatePersistentObject: Fatal error! The dimensionality is invalid. The specified dimensionality="
+	    << (sparse ? dimension - 1 : dimension) << ". The specified object=" << (sparse ? size - 1 : size) << ".";
+	NGTThrowException(msg);
+      }
+      return allocateObjectByValue(o, size);
     }
 
     template <typename T>
