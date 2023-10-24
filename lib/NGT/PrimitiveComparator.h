@@ -25,6 +25,27 @@
 #endif
 
 namespace NGT {
+  class MemoryPool {
+    uint8_t *pool;
+    size_t pos, size;
+  public:
+    MemoryPool(const size_t s): pos(0), size(s) {
+      pool = new uint8_t[size];
+    }
+    ~MemoryPool() {
+      delete[] pool;
+    }
+
+    uint8_t* get(const size_t s) {
+      if (pos + s > size) {
+            pos = 0;
+      }
+      auto ret = pool + pos;
+      pos += s;
+      return ret;
+    }
+  };
+  static MemoryPool mp = MemoryPool(sizeof(float) * 1000000 * 128 + sizeof(float) * 1024 * 128);
 
   class MemoryCache {
   public:
@@ -67,7 +88,8 @@ namespace NGT {
     }
     inline static void *alignedAlloc(const size_t allocSize) {
 #ifdef NGT_NO_AVX
-      return new uint8_t[allocSize];
+      //return new uint8_t[allocSize];
+      return mp.get(allocSize);
 #else
 #if defined(NGT_AVX512)
       size_t alignment = 64;
